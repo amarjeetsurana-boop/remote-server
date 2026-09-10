@@ -40,7 +40,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Chat
   socket.on('send-chat', (data) => {
     io.emit('receive-chat', {
       sender: data.sender,
@@ -50,4 +49,47 @@ io.on('connection', (socket) => {
     });
   });
 
-  // WebRTC
+  socket.on('webrtc-offer', (data) => {
+    socket.broadcast.emit('webrtc-offer', data);
+  });
+
+  socket.on('webrtc-answer', (data) => {
+    socket.broadcast.emit('webrtc-answer', data);
+  });
+
+  socket.on('webrtc-ice-candidate', (data) => {
+    socket.broadcast.emit('webrtc-ice-candidate', data);
+  });
+
+  socket.on('remote-click', (data) => {
+    socket.broadcast.emit('remote-click', data);
+  });
+
+  socket.on('remote-mouse-move', (data) => {
+    socket.broadcast.emit('remote-mouse-move', data);
+  });
+
+  socket.on('remote-scroll', (data) => {
+    socket.broadcast.emit('remote-scroll', data);
+  });
+
+  socket.on('remote-key', (data) => {
+    socket.broadcast.emit('remote-key', data);
+  });
+
+  socket.on('screen-info', (data) => {
+    socket.broadcast.emit('screen-info', data);
+  });
+
+  socket.on('mouse-click', (data) => {
+    socket.broadcast.emit('remote-click', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('[-] Node Disconnected: ' + socket.id);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log('Command Center Server running on port ' + PORT);
+});
