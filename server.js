@@ -4,7 +4,6 @@ const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-
 const io = new Server(server, {
     cors: {
         origin: "*",
@@ -24,14 +23,12 @@ io.on('connection', (socket) => {
 
     socket.on('auth-request', (data) => {
         const { role, district, passcode } = data;
-
         if (passcode === PASSCODE) {
             socket.role = role;
             socket.district = district;
-            
+
             socket.join(`district-${district}`);
             socket.join('command-center-global');
-
             console.log(`[✓] Auth Success: Socket ${socket.id} joined District ${district} as ${role}`);
             socket.emit('auth-success', { role, district });
         } else {
@@ -41,7 +38,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 1. Tactical Text Chat Relay
+    // 1. Chat
     socket.on('send-chat', (data) => {
         io.emit('receive-chat', {
             sender: data.sender,
@@ -51,29 +48,15 @@ io.on('connection', (socket) => {
         });
     });
 
-    // 2. WebRTC Stream Signaling Relays
+    // 2. WebRTC Signaling
     socket.on('webrtc-offer', (data) => {
         socket.broadcast.emit('webrtc-offer', data);
     });
-
     socket.on('webrtc-answer', (data) => {
         socket.broadcast.emit('webrtc-answer', data);
     });
-
     socket.on('webrtc-ice-candidate', (data) => {
         socket.broadcast.emit('webrtc-ice-candidate', data);
     });
 
-    // 3. Remote Mouse Control Event Relay
-    socket.on('mouse-click', (data) => {
-        socket.broadcast.emit('remote-click', data);
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`[-] Node Disconnected: ${socket.id}`);
-    });
-});
-
-server.listen(PORT, () => {
-    console.log(`⚡ Command Center Server running on port ${PORT}`);
-});
+    // 3.
